@@ -48,7 +48,7 @@ public class add_fatigue extends DefaultInternalAction {
             int r = (int)(in + in * model.getAgFatigue(agId, ig)); 
             return un.unifies(terms[resultIndex], new NumberTermImpl(r));
         } catch (Throwable e) {
-            ts.getLogger().log(Level.SEVERE, "jia.add_fatigue error: "+e + " solving ["+terms[0]+", "+terms[1]+"]", e);           
+            //ts.getLogger().log(Level.SEVERE, "jia.add_fatigue error: "+e + " solving ["+terms[0]+", "+terms[1]+"]", e);           
         }
         return false;
     }

@@ -20,16 +20,39 @@ import javax.swing.JOptionPane;
  * 
  * @author Jomi
  *
- * Changed public static Literal createCellPerception(int x, int y, Atom obj)
+ *
+ * @author fc@di.uevora.pt
+ *
+ * Seg  2 Mar 2015 15:16:21 WET
+ *
+ * Changed
+ *
+ * public static Literal createCellPerception(int x, int y, Atom obj)
+ *
  * to
+ *
  * public Literal createCellPerception(int x, int y, Atom obj)
+ *
  * so that cell perception can be overwritten by sub-classes (e.g. noisy environments);
+ *
+ * Seg  2 Mar 2015 15:16:21 WET 
+ *
+ * Changed
+ *
+ * WorldModel model
+ *
+ * to
+ *
+ * public WorldModel model
+ *
+ * so that run results can be accessed from the runner.
+ *
  */
 public class MiningEnvironment extends TimeSteppedEnvironment {
 
     private Logger          logger   = Logger.getLogger("jasonTeamSimLocal.mas2j." + MiningEnvironment.class.getName());
 
-    WorldModel              model;
+    public WorldModel       model;
     WorldView               view;
     
     int                     simId    = 5; // type of environment
@@ -75,6 +98,9 @@ public class MiningEnvironment extends TimeSteppedEnvironment {
     
     @Override
     public void stop() {
+        System.out.println(
+            model.getGoldsInDepotBlue()+ "," +
+            ((double)sum)/( (double)getStep()));
         super.stop();
     }
 
@@ -301,6 +327,7 @@ public class MiningEnvironment extends TimeSteppedEnvironment {
         try {
             if (step >= model.getMaxSteps() && model.getMaxSteps() > 0) {
                 String msg = "Finished at the maximal number of steps! Red x Blue = "+model.getGoldsInDepotRed() + " x "+model.getGoldsInDepotBlue(); 
+                msg += " [average step time: "+((double)sum)/( (double)step)+" ms";
                 logger.warning("** "+msg);
                 if (hasGUI) {
                     JOptionPane.showMessageDialog(null, msg);

@@ -29,7 +29,14 @@ public class NoisyMinerArch extends MinerArch {
 	static Atom[] CELLPERCEPTS = new Atom[]{aOBSTACLE, aGOLD, aENEMY, aALLY, aEMPTY};
 
 	BNAdapter bn;
+	//
+	//	Agent sensor noise
+	//
 	double prob_cell_noise;
+	//
+	//	Doing correction?
+	//
+	boolean do_correction;
 	Random rand = new Random();
 	Structure lastAction;
 
@@ -39,15 +46,22 @@ public class NoisyMinerArch extends MinerArch {
 	@Override
 	public void init() {
 		super.init();
-
 		//
 		//	Read noise parameter
 		//
-		double noise = 0.0;
 		if (getTS().getSettings().getUserParameter("noise") != null) {
 			prob_cell_noise = Double.parseDouble(getTS().getSettings().getUserParameter("noise"));
 		} else {
 			prob_cell_noise = 0.0;
+		}
+		//
+		//	Read correctPer parameter
+		//
+		do_correction = getTS().getSettings().getUserParameter("correctPer").toString().equals("true");
+		if (do_correction) {
+			logger.log(Level.INFO, "CORRECTING PERCEPTIONS: TRUE");
+		} else {			
+			logger.log(Level.INFO, "CORRECTING PERCEPTIONS: FALSE");
 		}
 		bn = new BNAdapter(getMyId(), new double[]{ prob_cell_noise });
 	}
@@ -68,7 +82,7 @@ public class NoisyMinerArch extends MinerArch {
 	public List<Literal> perceive() {
 		List<Literal> per = super.perceive();
 		Literal currentPos = Literal.parseLiteral("pos(0,0,0)");
-		try {		
+		if (per != null) {		
 			Vector<Literal> cellsPer = new Vector<Literal>();
 			Vector<Literal> otherPer = new Vector<Literal>();
 			for (Literal lit : per) {
@@ -86,21 +100,27 @@ public class NoisyMinerArch extends MinerArch {
 					//
 					otherPer.add(lit);
 				}
-			}			
-			//
-			//	Correct the current perception of cell contents
-			//
+			}	
 			Vector<Literal> noisyPer = addNoise(cellsPer);
-			Vector<Literal> estimPer = bn.correctPerception(
-				cellsPer,
-				noisyPer, 
-				lastAction, 
-				currentPos);
-			otherPer.addAll(estimPer);
+			if (do_correction) {		
+				//
+				//	Correct the current perception of cell contents
+				//
+				Vector<Literal> estimPer = bn.correctPerception(
+					cellsPer,
+					noisyPer, 
+					lastAction, 
+					currentPos);
+				otherPer.addAll(estimPer);				
+			} else {
+				//
+				//	Don't correct perception
+				//
+				otherPer.addAll(noisyPer);
+			}
 			return localPerceive(otherPer);
-		} catch (Exception e) {
 		}
-		return per;
+		return localPerceive(per);
 	}
 
 	private Vector<Literal> addNoise(List<Literal> per) {

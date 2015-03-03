@@ -95,4 +95,15 @@ Sáb 28 Fev 2015 12:29:55 UTC
         </delete>
     </target>
 
+    <target name = "test" depends = "compile" >
+        <echo message = "Testing project ${ant.project.name}" />
+        <java classname = "test.BNCalcTest"
+            failonerror = "true" fork = "yes" dir = "${basedir}" >
+            <classpath refid = "project.classpath"/>
+            <arg line = "${mas2j.project.file} ${debug} "/>
+            <!-- jvmarg line = "-Xmx500M -Xss8M"/ -->    
+        </java>
+        <antcall target = "user-end" />
+    </target>
+
 </project>

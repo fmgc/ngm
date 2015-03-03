@@ -1,0 +1,417 @@
+\documentclass[tikz]{standalone}
+\usepackage[utf8x]{inputenc}
+
+%
+%
+% SUBFIGURE
+%
+%
+\usepackage{subfigure}
+\subfigtopskip=0pt
+\subfigcapskip=0pt
+\subfigbottomskip=0pt
+%
+%
+%
+%	TIKZ 
+%
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usetikzlibrary{backgrounds}
+\usetikzlibrary{patterns}
+\usetikzlibrary{intersections} 
+\tikzset{obs/.style={var, fill = black!10}}
+\tikzset{rel/.style={fill = black!5}}
+
+%
+%	For influence diagrams
+\usetikzlibrary{shapes.misc}
+%
+% common style
+\tikzset{idnode/.style={inner ysep = 4pt,inner xsep = 8pt, draw}}
+%
+% random var
+\tikzset{varnode/.style={idnode,rounded rectangle}}
+%
+% random var
+\tikzset{detnode/.style={idnode,rounded rectangle,double}}
+%
+% utility
+\tikzset{utilnode/.style={idnode, chamfered rectangle, chamfered rectangle 
+		xsep=32pt, chamfered rectangle ysep=0pt}}
+%
+% action
+\tikzset{actionnode/.style={idnode,rectangle}}
+%
+% arrows
+\tikzset{cond/.style={>=stealth,draw}}
+%\tikzset{cond/.style={>=latex,draw}}
+
+\tikzset{var/.style={draw, rounded rectangle}}
+\tikzset{det/.style={double}}
+\tikzset{action/.style={draw,rectangle}}
+
+%
+%	PGFPLOTS
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.9}
+\usepgfplotslibrary{statistics,fillbetween}
+\pgfdeclarelayer{background}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground}
+%
+
+%
+%	ACTIONS
+%
+\newcommand{\aup}{\ensuremath{\uparrow}}
+\newcommand{\adown}{\ensuremath{\downarrow}}
+\newcommand{\aleft}{\ensuremath{\leftarrow}}
+\newcommand{\aright}{\ensuremath{\rightarrow}}
+\newcommand{\apick}{\ensuremath{\Uparrow}}
+\newcommand{\adrop}{\ensuremath{\Downarrow}}
+\newcommand{\askip}{\ensuremath{\emptyset}}
+
+
+%
+%	PERCEPT VALUES
+%
+\newcommand{\pempty}{\ensuremath{\bigcirc}}
+\newcommand{\pgold}{\ensuremath{\otimes}}
+\newcommand{\pminer}{\ensuremath{\odot}}
+\newcommand{\pobstacle}{\ensuremath{\oplus}}
+
+%
+% LOCAL TOPO DIAGRAMS
+%
+
+\newcommand{\loccorner}[1] {
+		\node[var, rel] (C0) at (1,1) {};
+		\node[var] (C1) at (2,1) {};
+		\node[var] (C2) at (1,0) {};
+		\node[var] at (0,1) {};
+		\node[var] at (1,2) {};
+		\node at (2, 0) {#1};
+		\path
+			(C1) edge (C0)
+			(C2) edge (C0)
+		;
+}
+
+\newcommand{\locmiddle}[1] {
+		\node[var, rel] (M0) at (1,1) {};
+		\node[var] (M1) at (2,1) {};
+		\node[var] (M2) at (1,0) {};
+		\node[var] (M3) at (0,1) {};
+		\node[var] (M4) at (1,2) {};
+		\node at (2, 0) {#1};
+		\path
+			(M1) edge (M0)
+			(M2) edge (M0)
+			(M3) edge (M0)
+		;				
+}
+
+\newcommand{\loccenter}[1] {
+		\node[var, rel] (X0) at (1,1) {};
+		\node[var] (X1) at (2,1) {};
+		\node[var] (X2) at (1,0) {};
+		\node[var] (X3) at (0,1) {};
+		\node[var] (X4) at (1,2) {};
+		\node at (2, 0) {#1};
+		\path
+			(X1) edge (X0)
+			(X2) edge (X0)
+			(X3) edge (X0)
+			(X4) edge (X0)
+		;				
+}
+
+\newcommand{\sensorgrid}{
+		\node[var,obs] (S0) at (0,2) {$Y_0$};
+		\node[var,obs] (S1) at (1,2) {$Y_1$};
+		\node[var,obs] (S2) at (2,2) {$Y_2$};
+		\node[var,obs] (S3) at (0,1) {$Y_3$};
+		\node[var,obs] (S4) at (1,1) {$Y_4$};
+		\node[var,obs] (S5) at (2,1) {$Y_5$};
+		\node[var,obs] (S6) at (0,0) {$Y_6$};
+		\node[var,obs] (S7) at (1,0) {$Y_7$};
+		\node[var,obs] (S8) at (2,0) {$Y_8$};
+
+		\path[dotted]
+			(S0) edge (S1)
+			(S1) edge (S2)
+			(S3) edge (S4)
+			(S4) edge (S5)
+			(S6) edge (S7)
+			(S7) edge (S8)
+			(S0) edge (S3)
+			(S1) edge (S4)
+			(S2) edge (S5)
+			(S3) edge (S6)
+			(S4) edge (S7)
+			(S5) edge (S8)
+		;				
+}
+
+%
+% MATH
+%
+\newcommand{\at}[1]{\ensuremath{\!\left(#1\right)}}
+\newcommand{\PARS}[1]{\left\{ #1 \right\}}
+\newcommand{\SET}[1]{\PARS{#1}}
+\newcommand{\PC}[2] {\ensuremath{P\at{#1\middle| #2}}}
+\newcommand{\col}[1] {\ensuremath{\begin{array}[c]#1\end{array}}}
+
+%
+%
+%	ACRONYMS
+%
+\usepackage{acronym}
+%
+\acrodef{BRF}[BRF]{belief-revision function}
+\acrodef{PCF}[PCF]{percept-correction function}
+\acrodef{CPT}[CPT]{conditional probability table}
+\acrodef{PGM}{Probabilistic Graphical Model}
+\acrodef{ML}{Machine Learning}
+\acrodef{BDI}{Beliefs, Desires and Intentions}
+\acrodef{SRL}{Statistical Relational Learning}
+\acrodef{PLP}{Probabilistic Logic Programming}
+\acrodef{ASL}[\textsc{ASL}]{\textsc{AgentSpeak(L)}}
+\acrodef{BN}{Bayesian Network}
+\acrodef{DBN}{Dynamic Bayesian Network}
+\acrodef{HMM}{Hidden Markov Model}
+\acrodef{AI}{Artificial Intelligence}
+\acrodef{PCA}{Principal Component Analysis}
+\acrodef{DNN}{Deep Neural Networks}
+\acrodef{CPD}{Conditional Probability Distribution}
+\acrodef{MEU}{Maximum Expected Utility}
+\acrodef{MAP}{Maximum \emph{a posteriori}}
+\acrodef{MkL}{Markov Logic}
+\acrodef{PPC}{Probabilistic Preception Correction}
+%
+
+%
+%	COMMANDS
+%
+\newcommand{\JASON}{\textsc{Jason}}
+\newcommand{\DLIB}{\textsc{Dlib}}
+\newcommand{\GM}{\textsc{GoldMiners}}
+\newcommand{\WEKA}{\textsc{weka}}
+\newcommand{\SAMIAM}{\textsc{samiam}}
+\newcommand{\PROLOG}{\textsc{ProLog}}
+\newcommand{\JAVA}{\textsc{Java}}
+\newcommand{\GALAXITY}{\textsc{Galaxity}}
+\newcommand{\OPENMARKOV}{{\textsc{OpenMarkov}}}
+
+\newcommand{\Sel}[1]{\ensuremath{\cal{S}_{\cal{#1}}}}
+\newcommand{\SE}{\ensuremath{\textrm{selectEvent}}}
+\newcommand{\SO}{\ensuremath{\textrm{selectOption}}}
+\newcommand{\SI}{\ensuremath{\textrm{selectIntention}}}
+\newcommand{\AUTHNOTE}[1]{{\color{blue} [#1]}}
+\newcommand{\GOLDS}{\ensuremath{\mathbf{G}}}
+\newcommand{\mathtxt}[1]{\ensuremath{\textrm{#1}}}
+\newcommand{\pr}{\ensuremath{\textrm{P}}}
+\newcommand{\PR}[1]{\ensuremath{\pr\at{#1}}}
+\newcommand{\GIVEN}{\ensuremath{~\middle|~}}
+\newcommand{\AT}[1]{\!\left(#1\right)}
+\newcommand{\TS}[1]{\ensuremath{^{(#1)}}}
+\newcommand{\INDG}[3]{\ensuremath{#1~\perp~#2~\mid~#3}}
+%
+
+% %
+
+\begin{document}
+	\begin{tikzpicture}	
+		\begin{axis}[smooth,
+			width = \textwidth,
+			height = \textwidth,
+			title = {Effect of Perception Correction on Processing Time},
+			xlabel = {Sensor noise}, ylabel = {Processing Time (ms)},
+			xmin = -0.005, xmax = 0.205,
+			xtick = {0.0, 0.025, 0.05, 0.075, 0.1, 0.125, 0.15, 0.175, 0.2},
+			xticklabel style = {
+				/pgf/number format/precision = 3,
+				/pgf/number format/fixed,
+				/pgf/number format/fixed zerofill,
+			},
+			mark options = {scale = 2,},
+			]
+			%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+			%
+			%	MEAN PLOTS
+			%
+			%	dummy
+			%
+			% \addplot[solid,black,mark=diamond]
+			% 	table[x=NOISE,y=DUMMY] {experiment2.tex};
+			% \addlegendentry{dummy};
+			%
+			%	noc
+			%
+			\addplot[solid,black,mark=square]
+				table[ col sep = comma,
+					x = noise,
+					y = timem ] {nopc_summary.csv};
+			\addlegendentry{smart};
+			% %
+			% %	cor
+			% %
+			\addplot[solid,black,mark=o]
+				table[ col sep = comma,
+					x = noise,
+					y = timem ] {pc_summary.csv};
+			\addlegendentry{corrected};
+			% %
+			% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+			% %
+			% %	MEAN +/- STDVAR PLOTS
+			% %
+			% %
+			% %	dummy
+			% %
+			% \addplot[black!10, name path = DMIN]
+			% 	table[x=NOISE,y=DUMMYMIN] {experiment2.tex};	
+			% \addplot[black!10, name path = DMAX]
+			% 	table[x=NOISE,y=DUMMYMAX] {experiment2.tex};
+			% %
+			% %	noc
+			% %
+			\addplot[black!10, name path = NMIN]
+				table[ col sep = comma,
+					x = noise,
+					y expr = \thisrow{timem} - 0.5*\thisrow{times} ] {nopc_summary.csv};
+			\addplot[black!10, name path = NMAX]
+				table[ col sep = comma,
+					x = noise,
+					y expr = \thisrow{timem} + 0.5*\thisrow{times}] {nopc_summary.csv};
+			% %
+			% %	cor
+			% %
+			\addplot[black!10, name path = CMIN]
+				table[ col sep = comma,
+					x = noise,
+					y expr = \thisrow{timem} - 0.5*\thisrow{times} ] {pc_summary.csv};
+			\addplot[black!10, name path = CMAX]
+				table[ col sep = comma,
+					x = noise,
+					y expr = \thisrow{timem} + 0.5*\thisrow{times}] {pc_summary.csv};
+			%
+			%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+			%
+			%	FILL PLOTS
+			%
+			%
+			%	dummy
+			%
+			%\addplot[black!10, opacity=0.25]
+			%	fill between [of= DMIN and DMAX];
+			%
+			%	noc
+			%
+			\addplot[black!10, opacity=0.25]
+				fill between [of= NMIN and NMAX];
+			%
+			%	cor
+			%
+			\addplot[black!20, opacity = 0.25]
+				fill between [of= CMIN and CMAX];
+		\end{axis}
+	\end{tikzpicture}
+	\begin{tikzpicture}
+		\begin{axis}[smooth,
+			width = \textwidth,
+			height = \textwidth,
+			title = {Effect of Perception Correction on Gathered Golds},
+			xlabel = {Sensor noise}, ylabel = {Gathered golds},
+			xmin = -0.005, xmax = 0.205,
+			xtick = {0.0, 0.025, 0.05, 0.075, 0.1, 0.125, 0.15, 0.175, 0.2},
+			xticklabel style = {
+				/pgf/number format/precision = 3,
+				/pgf/number format/fixed,
+				/pgf/number format/fixed zerofill,
+			},
+			mark options = {scale = 2,},
+			]
+			%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+			%
+			%	MEAN PLOTS
+			%
+			%	dummy
+			%
+			% \addplot[solid,black,mark=diamond]
+			% 	table[x=NOISE,y=DUMMY] {experiment2.tex};
+			% \addlegendentry{dummy};
+			%
+			%	noc
+			%
+			\addplot[solid,black,mark=square]
+				table[ col sep = comma,
+					x = noise,
+					y = goldsm ] {nopc_summary.csv};
+			\addlegendentry{smart};
+			% %
+			% %	cor
+			% %
+			\addplot[solid,black,mark=o]
+				table[ col sep = comma,
+					x = noise,
+					y = goldsm ] {pc_summary.csv};
+			\addlegendentry{corrected};
+			% %
+			% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+			% %
+			% %	MEAN +/- STDVAR PLOTS
+			% %
+			% %
+			% %	dummy
+			% %
+			% \addplot[black!10, name path = DMIN]
+			% 	table[x=NOISE,y=DUMMYMIN] {experiment2.tex};	
+			% \addplot[black!10, name path = DMAX]
+			% 	table[x=NOISE,y=DUMMYMAX] {experiment2.tex};
+			% %
+			% %	noc
+			% %
+			\addplot[black!10, name path = NMIN]
+				table[ col sep = comma,
+					x = noise,
+					y expr = \thisrow{goldsm} - 0.5*\thisrow{goldss} ] {nopc_summary.csv};
+			\addplot[black!10, name path = NMAX]
+				table[ col sep = comma,
+					x = noise,
+					y expr = \thisrow{goldsm} + 0.5*\thisrow{goldss}] {nopc_summary.csv};
+			% %
+			% %	cor
+			% %
+			\addplot[black!10, name path = CMIN]
+				table[ col sep = comma,
+					x = noise,
+					y expr = \thisrow{goldsm} - 0.5*\thisrow{goldss} ] {pc_summary.csv};
+			\addplot[black!10, name path = CMAX]
+				table[ col sep = comma,
+					x = noise,
+					y expr = \thisrow{goldsm} + 0.5*\thisrow{goldss}] {pc_summary.csv};
+			%
+			%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+			%
+			%	FILL PLOTS
+			%
+			%
+			%	dummy
+			%
+			%\addplot[black!10, opacity=0.25]
+			%	fill between [of= DMIN and DMAX];
+			%
+			%	noc
+			%
+			\addplot[black!10, opacity=0.25]
+				fill between [of= NMIN and NMAX];
+			%
+			%	cor
+			%
+			\addplot[black!20, opacity = 0.25]
+				fill between [of= CMIN and CMAX];
+		\end{axis}
+	\end{tikzpicture}	
+\end{document}

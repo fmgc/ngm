@@ -45,7 +45,7 @@ public class path_length extends DefaultInternalAction {
                     int length = solution.getProfundidade();
                     return un.unifies(terms[4], new NumberTermImpl(length));
                 } else {
-                    ts.getLogger().info("No route from "+from+" to "+to+"!"+"\n"+model);
+                    //ts.getLogger().info("No route from "+from+" to "+to+"!"+"\n"+model);
                 }
             }
         } catch (Throwable e) {

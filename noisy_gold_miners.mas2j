@@ -22,7 +22,7 @@ MAS noisy_gold_miners {
         leader  [verbose = 0]
             beliefBaseClass agent.DiscardBelsBB("my_status","picked","committed_to","cell");
               
-        miner   [verbose = 0, noise = 0.1]
+        miner   [verbose = 0, noise = 0.175, correctPer = false]
             //
             // This agent class gives preference to gold related events
             //
