@@ -16,8 +16,12 @@ MAS noisy_gold_miners {
         //             7. override model number of steps
         
     agents:
-        dummy   [verbose = 0]
-            agentArchClass  arch.LocalMinerArch #6;
+        // 
+        //dummy   [verbose = 0]
+        //    agentArchClass  arch.LocalMinerArch #6;
+        //
+        dummy  [verbose = 0, noise = 0.175, correctPer = false]        
+            agentArchClass  arch.NoisyMinerArch #6;
 
         leader  [verbose = 0]
             beliefBaseClass agent.DiscardBelsBB("my_status","picked","committed_to","cell");

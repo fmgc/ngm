@@ -99,6 +99,7 @@ public class MiningEnvironment extends TimeSteppedEnvironment {
     @Override
     public void stop() {
         System.out.println(
+            model.getGoldsInDepotRed()+ "," +
             model.getGoldsInDepotBlue()+ "," +
             ((double)sum)/( (double)getStep()));
         super.stop();

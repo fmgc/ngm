@@ -243,9 +243,6 @@
 			%
 			%	dummy
 			%
-			% \addplot[solid,black,mark=diamond]
-			% 	table[x=NOISE,y=DUMMY] {experiment2.tex};
-			% \addlegendentry{dummy};
 			%
 			%	noc
 			%
@@ -339,9 +336,11 @@
 			%
 			%	dummy
 			%
-			% \addplot[solid,black,mark=diamond]
-			% 	table[x=NOISE,y=DUMMY] {experiment2.tex};
-			% \addlegendentry{dummy};
+			\addplot[solid,black,mark=diamond]
+				table[ col sep = comma,
+					x = noise,
+					y = goldsm ] {dummy_summary.csv};
+			\addlegendentry{dummy};
 			%
 			%	noc
 			%
@@ -366,10 +365,14 @@
 			% %
 			% %	dummy
 			% %
-			% \addplot[black!10, name path = DMIN]
-			% 	table[x=NOISE,y=DUMMYMIN] {experiment2.tex};	
-			% \addplot[black!10, name path = DMAX]
-			% 	table[x=NOISE,y=DUMMYMAX] {experiment2.tex};
+			\addplot[black!10, name path = DMIN]
+				table[ col sep = comma,
+					x = noise,
+					y expr = \thisrow{goldsm} - 0.5*\thisrow{goldss} ] {dummy_summary.csv};
+			\addplot[black!10, name path = DMAX]
+				table[ col sep = comma,
+					x = noise,
+					y expr = \thisrow{goldsm} + 0.5*\thisrow{goldss}] {dummy_summary.csv};
 			% %
 			% %	noc
 			% %
@@ -400,8 +403,8 @@
 			%
 			%	dummy
 			%
-			%\addplot[black!10, opacity=0.25]
-			%	fill between [of= DMIN and DMAX];
+			\addplot[black!10, opacity=0.25]
+				fill between [of= DMIN and DMAX];
 			%
 			%	noc
 			%
